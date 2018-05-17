@@ -30,7 +30,7 @@ def test_divide():
     assert divide(4,-2)==-2.0
 {% endhighlight %}
 
-### 1. Code Coverage
+## 1. Code Coverage
 
 Code coverage is the percentage of code that gets executed when all the test cases corresponding to that piece of code are run. When code coverage is high, it means that most of the code has been rightly tested and we know the expected behavior. Having a metric for code coverage helps in being informed of the key issues with the code base. Further, it helps us identify areas that need improvement. 
 
@@ -38,15 +38,11 @@ For this task, I am using Coveralls which is a tool to analyze code coverage wit
 
 yt has codebase in both Python and Cython. My aim is to improve test suites in both the cases by writing new test cases, if not already done, and to optimize the current test cases. Starting point to expand test cases is by adding support for different geometries (cartesian, cylindrical, and spherical coordinates) and data styles (particle data, mesh data, including uniform resolution, octree, patch AMR, and unstructured meshes). Using the existing test functions fake_random_ds, fake_amr_ds, and fake_particle_ds I can define a fake_test_datasets generators. Using this, a given functionality could be tested for different underlying geometries and data styles.
 
-### 2. Test Runtime
+## 2. Test Runtime
 With the increasing codebase, the runtime of tests also increases. If the tests are not written meticulously then this runtime would become linear in the number of test cases. In order to make it efficient, I aim to utilize the parallelization provided by Travis CI [build matrix](https://docs.travis-ci.com/user/customizing-the-build/#Build-Matrix) feature. Using this, we can split the test suite into unit and integration tests resulting in two different build jobs which will run in parallel and fully utilize the available build capacity.
 
 Furthermore, in the case of yt, test runtime could be reduced heavily by improving the answer testing and image comparison tests. Instead of these heavy tests, expected values of the function could be compared with a pre-computed value. Using Matplotlib's image [testing](https://matplotlib.org/1.5.3/devel/testing.html) approach we can compare the gold images (known-correct images) with the generated image ([ImageComparisonTest](https://github.com/matplotlib/matplotlib/blob/5e52ce11ab59176a467dd2c68db8c5e1fbc20a24/lib/matplotlib/testing/decorators.py#L282)) and thus remove the current plot/image answer tests.
 
-===
-
-***
-
----
+##
 
 With this goal in mind, I warmly welcome all the suggestions and ideas that could be implemented to enhance yt's test framework. I thank all yt community members for helping and guiding me till now and the days to come!
