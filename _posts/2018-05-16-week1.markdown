@@ -1,8 +1,7 @@
 ---
 layout: post
 title:  "Starting Open Source Developement"
-date:   2018-05-16 19:22:10 -0400
-categories: week 1
+permalink: gsoc-week1
 ---
 
 As my software developer journey is advancing, my love for open source software development is growing. I always wanted to get involved and contribute to open source community. It was not until when I got to know about Google Summer of Code ([GSoC](https://summerofcode.withgoogle.com/)), I had no idea that anyone willing to contribute could get involved with these organizations. 
