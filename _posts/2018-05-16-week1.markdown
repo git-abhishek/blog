@@ -11,8 +11,6 @@ GSoC acted as a bridge between open source organizations and individuals like me
 
 During this "summer" I will be focusing on, to enhance and optimize yt's test framework. The main objective is to reduce the test runtime and increase code coverage. With these fixes, I aim to make yt more developer friendly and at the same time minimize the risks due to untested code.
 
-
-
 > A developer's job is not just to write test cases. But to have to all path of code executions thoroughly tested.
 
 ```
@@ -30,8 +28,8 @@ def test_divide():
     assert divide(4,-2)==-2.0
 ```
 
-### 1. Code Coverage
 
+### 1. Code Coverage
 
 Code coverage is the percentage of code that gets executed when all the test cases corresponding to that piece of code are run. When code coverage is high, it means that most of the code has been rightly tested and we know the expected behavior. Having a metric for code coverage helps in being informed of the key issues with the code base. Further, it helps us identify areas that need improvement. 
 
@@ -41,7 +39,6 @@ yt has codebase in both Python and Cython. My aim is to improve test suites in b
 
 
 ### 2. Test Runtime
-
 
 With the increasing codebase, the runtime of tests also increases. If the tests are not written meticulously then this runtime would become linear in the number of test cases. In order to make it efficient, I aim to utilize the parallelization provided by Travis CI [build matrix](https://docs.travis-ci.com/user/customizing-the-build/#Build-Matrix) feature. Using this, we can split the test suite into unit and integration tests resulting in two different build jobs which will run in parallel and fully utilize the available build capacity.
 
