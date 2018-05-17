@@ -43,4 +43,6 @@ With the increasing codebase, the runtime of tests also increases. If the tests 
 
 Furthermore, in the case of yt, test runtime could be reduced heavily by improving the answer testing and image comparison tests. Instead of these heavy tests, expected values of the function could be compared with a pre-computed value. Using Matplotlib's image [testing](https://matplotlib.org/1.5.3/devel/testing.html) approach we can compare the gold images (known-correct images) with the generated image ([ImageComparisonTest](https://github.com/matplotlib/matplotlib/blob/5e52ce11ab59176a467dd2c68db8c5e1fbc20a24/lib/matplotlib/testing/decorators.py#L282)) and thus remove the current plot/image answer tests.
 
+***
+
 With this goal in mind, I warmly welcome all the suggestions and ideas that could be implemented to enhance yt's test framework. I thank all yt community members for helping and guiding me till now and the days to come!
