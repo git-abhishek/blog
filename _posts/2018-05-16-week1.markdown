@@ -4,11 +4,13 @@ title:  "Starting Open Source Developement"
 date:   2018-05-16 19:22:10 -0400
 categories: week 1
 ---
+
 As my software developer journey is advancing, my love for open source software development is growing. I always wanted to get involved and contribute to open source community. It was not until when I got to know about Google Summer of Code ([GSoC](https://summerofcode.withgoogle.com/)), I had no idea that anyone willing to contribute could get involved with these organizations. 
 
 GSoC acted as a bridge between open source organizations and individuals like me. Through GSoC, I interacted with the community members of [yt](http://yt-project.org/) (a python package for analyzing and visualizing volumetric data). I got excited about their development and this led me to formally apply to yt under GSoC. I am fortunate of being selected by yt and quite enthusiastic about helping in building a tool that has become a part and parcel of many researchers.
 
 During this "summer" I will be focusing on, to enhance and optimize yt's test framework. The main objective is to reduce the test runtime and increase code coverage. With these fixes, I aim to make yt more developer friendly and at the same time minimize the risks due to untested code.
+
 
 
 > A developer's job is not just to write test cases. But to have to all path of code executions thoroughly tested.
@@ -17,17 +19,19 @@ During this "summer" I will be focusing on, to enhance and optimize yt's test fr
 def divide(a,b):
     if b!=0:
         return a/b
-    # Test case when b = 0, is never checked.
-    # Code coverage could tell us the path
-    # that never got executed in a complex codebase
-    return exit()
-   
- def test_divide():
+   return exit()
+ 
+# Test case when b = 0, is never checked.
+# Code coverage could tell us the path
+# that never got executed in a complex codebase
+
+def test_divide():
     assert divide(4,2)==2.0
     assert divide(4,-2)==-2.0
 {% endhighlight %}
 
 ### 1. Code Coverage
+
 Code coverage is the percentage of code that gets executed when all the test cases corresponding to that piece of code are run. When code coverage is high, it means that most of the code has been rightly tested and we know the expected behavior. Having a metric for code coverage helps in being informed of the key issues with the code base. Further, it helps us identify areas that need improvement. 
 
 For this task, I am using Coveralls which is a tool to analyze code coverage with each pull request (PR). Thus, if the developer has made sure to test all the paths, then code coverage will remain same (or could go higher, if added test cases for old code) otherwise the code coverage will reduce. This makes the developer realize the importance of testing their code thoroughly and ultimately helps in shipping more robust code.
