@@ -23,8 +23,7 @@ linkedin_username: asingh690
 
 # Build settings
 markdown: kramdown
-theme: jekyll-theme-cayman
-#theme: minima
+theme: minima
 plugins:
   - jekyll-feed
 
