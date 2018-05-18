@@ -27,6 +27,11 @@ theme: minima
 plugins:
   - jekyll-feed
 
+comments:
+  provider: "disqus"
+  disqus:
+    shortname: "disqus_vfvPCX79Cf"
+
 defaults:
   # _posts
   - scope:
