@@ -27,11 +27,6 @@ theme: minima
 plugins:
   - jekyll-feed
 
-comments:
-  provider: "disqus"
-  disqus:
-    shortname: "https-git-abhishek-github-io-blog"
-
 defaults:
   # _posts
   - scope:
@@ -39,7 +34,6 @@ defaults:
       type: posts
     values:
       read_time: true
-      comments: true
       share: true
       related: true
      
