@@ -11,7 +11,9 @@ GSoC acted as a bridge between open source organizations and individuals like me
 
 During this "summer" I will be focusing on, to enhance and optimize yt's test framework. The main objective is to reduce the test runtime and increase code coverage. With these fixes, I aim to make yt more developer friendly and at the same time minimize the risks due to untested code.
 
+>
 > A developer's job is not just to write test cases. But to have to all path of code executions thoroughly tested.
+>
 
 {% highlight python %}
 def divide(a,b):
