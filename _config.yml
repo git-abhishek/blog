@@ -15,15 +15,18 @@
 # in the templates via {{ site.myvariable }}.
 title: Abhishek Singh
 email: abhisheksing@umass.edu
-description:   Google Summer of Code'18 with yt
+tagline:  "Google Summer of Code'18 with yt"
 baseurl: "/blog" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  git-abhishek
 linkedin_username: asingh690
+repository: git-abhishek/yt
 
 # Build settings
 markdown: kramdown
 theme: minima
+theme: jekyll-theme-cayman
+
 plugins:
   #- jekyll-feed
 

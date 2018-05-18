@@ -6,6 +6,10 @@ categories: "gsoc-week1"
 permalink: /:categories
 ---
 
+ <style type="text/css">
+.page-header { color: #fff; text-align: center; background-color: #159957; background-image: linear-gradient(120deg, #000046, #1cb5e0); }
+  </style>
+
 As my software developer journey is advancing, my love for open source software development is growing. I always wanted to get involved and contribute to open source community. It was not until when I got to know about Google Summer of Code ([GSoC](https://summerofcode.withgoogle.com/)), I had no idea that anyone willing to contribute could get involved with these organizations. 
 
 GSoC acted as a bridge between open source organizations and individuals like me. Through GSoC, I interacted with the community members of [yt](http://yt-project.org/) (a python package for analyzing and visualizing volumetric data). I got excited about their development and this led me to formally apply to yt under GSoC. I am fortunate of being selected by yt and quite enthusiastic about helping in building a tool that has become a part and parcel of many researchers.
