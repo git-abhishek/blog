@@ -16,11 +16,10 @@
 title: Abhishek Singh
 email: abhisheksing@umass.edu
 description:   Google Summer of Code'18 with yt
-               (NumFOCUS Sponsored Project)
 baseurl: "/blog" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  git-abhishek
-linkedin_username: in/asingh690/
+linkedin_username: asingh690
 
 # Build settings
 markdown: kramdown
