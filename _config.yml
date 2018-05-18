@@ -16,7 +16,7 @@
 title: Abhishek Singh
 email: abhisheksing@umass.edu
 description: >- # this means to ignore newlines until "baseurl:"
-  Google Summer of Code'18 with yt-NumFOCUS Sponsored Project
+  Google Summer of Code'18 with yt (a NumFOCUS Sponsored Project)
 baseurl: "/blog" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  git-abhishek
@@ -30,7 +30,7 @@ plugins:
 comments:
   provider: "disqus"
   disqus:
-    shortname: "disqus_vfvPCX79Cf"
+    shortname: "https-git-abhishek-github-io-blog"
 
 defaults:
   # _posts
