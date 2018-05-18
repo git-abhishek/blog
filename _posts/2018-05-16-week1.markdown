@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Starting Open Source Developement"
+excerpt: "Breif description of my Project"  
 categories: "gsoc-week1"
 permalink: /:categories
 ---
