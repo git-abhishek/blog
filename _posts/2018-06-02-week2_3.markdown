@@ -59,10 +59,9 @@ I am following the following methodology to improve the test suites:
 
 #### List of PRs sumitted during these weeks:
 
-**PR in review:**
- - [Removed coverage report from Travis Logs and Flake8 with Build Stages](https://github.com/yt-project/yt/pull/1810)
- 
 **Merged PR:**
+
+- [Removed coverage report from Travis Logs and Flake8 with Build Stages](https://github.com/yt-project/yt/pull/1810)
 - [Updating tests to use fake dataset instead of real data](https://github.com/yt-project/yt/pull/1809)
 - [ Updating config to not fail the pushed patch ](https://github.com/yt-project/yt/pull/1805)
 - [ Removing the dependency from real datasets ](https://github.com/yt-project/yt/pull/1801)
