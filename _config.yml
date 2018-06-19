@@ -30,6 +30,7 @@ theme: jekyll-theme-cayman
 plugins:
   #- jekyll-feed
   - "disqus-for-jekyll"
+  - jemoji
 
 defaults:
   # _posts
