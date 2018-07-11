@@ -1,0 +1,99 @@
+---
+layout: post
+title:  "yt.visualization"
+excerpt: ""  
+categories: "gsoc-blog-4"
+permalink: /:categories
+---
+
+ <style type="text/css">
+.page-header { color: #fff; text-align: center; background-color: #159957; background-image: linear-gradient(120deg, #fc00ff, #00dbde); }
+  </style>
+
+During the past few weeks, I worked on `visualization` module. Following is a brief description of the work:
+
+### Merged PRs
+
+- **[Added test cases for visualization.color_maps](https://github.com/yt-project/yt/pull/1841/files):** Implemented `requires_backend` decorator which will run the test only if the currently set matplotlib backend is the same as specified in the decorator. One simple use case of this decorator is in writing test cases for a function that displays a plot on the screen. If the set matplotlib backend is interactive, then running this test with other tests would require us to manually closing the plot window otherwise the tests would be blocked. Thus, it is suitable to run this test only when a non-interactive backend is set, such that it will not block other tests. This check of a particular type of backend and executing the function if it passes this check is easily wrapped by the `requires_backend` functionality.
+
+- **[Adding test cases for visualization.image_writer](https://github.com/yt-project/yt/pull/1842):** Improved the coverage by adding more test cases for `image_writer`, deleted dead code, improved error checking and error message.
+
+- **[Remove LinearLocator, LogLocator from Visualization](https://github.com/yt-project/yt/pull/1861):** As part of refactoring, I deleted the `LinearLocator` and `LogLocator` from `Visualization` module.
+
+- **[Input validation for selection data containers](https://github.com/yt-project/yt/pull/1870):** This was a fix for issue [#1843](https://github.com/yt-project/yt/issues/1843). While creating any geometric selector of data containers (like `YTPoint, YTOrthoRay, YTRay, YTSlice, YTCuttingPlane, YTRegion, YTSphere, YTEllipsoid, YTCutRegion`) proper input validation was not being done. Thus, if not properly created, these geometries could raise exceptions during runtime. Further, these error messages were not well-formed and thus it was difficult to narrow down to the problem, in spite of an error message. 
+
+    Majority of the validation functions were already merged in my earlier PR [input validation for disk](https://github.com/yt-project/yt/pull/1833). Using the same approach, I added a few more validation functions (`validate_axis`, `validate_center`) and added these validations for each of the geometry.
+
+- **[Clean-up generated files after the tests](https://github.com/yt-project/yt/pull/1871):** These tests were generating files in the working directory. It is a good practice to create such files in a temporary directory and delete the directory after the tests are finished. To achieve this, I wrapped these tests inside a class. The class method `setUpClass` is executed before any other class method. In this function, we can create a temporary directory where we can dump files. The class method `tearDownClass` is executed once all the tests are executed and thus serves a good place to write clean-up code.
+
+    ```python
+    class TestClass(unittest.TestCase):
+        @classmethod
+        def setUpClass(cls):
+            cls.tmpdir = tempfile.mkdtemp()
+            cls.curdir = os.getcwd()
+            os.chdir(cls.tmpdir)
+
+        @classmethod
+        def tearDownClass(cls):
+            os.chdir(cls.curdir)
+            shutil.rmtree(cls.tmpdir)
+
+        def test_feature(self):
+            pass
+
+    ```
+
+
+---
+
+### Open PR
+- **[Answer tests on Travis](https://github.com/yt-project/yt/pull/1883):** 
+    At present, all the answer tests require real datasets. Due to this, running answer tests on cloud platforms like Travis, Appveyor is highly inefficient and not feasible. Running answer tests on such platforms requires the tests to use in-memory datasets and not depend on real datasets that are I/O intensive.
+
+    The first step is to use fake datasets defined in the [yt.testing](https://github.com/yt-project/yt/blob/master/yt/testing.py). The next step was to divide the tests into two categories, namely, unit tests and answer tests. Using nose's attribute selector plugin `Attrib`, one can tag tests. I used the `attr` decorator to mark answer tests. With this, we can easily run the tests in two phases, one for unit tests and the other for answer tests.
+
+    Next, to compare images/plots I used yt's [Answer Testing](http://yt-project.org/doc/developing/testing.html#answer-testing) framework which is written as a nose plugin. To execute nosetests, there are two options. One is to run in the command line as `nosetests [options] [(optional) test files or directories]` and the other is to import the nose plugin in python and then run it by importing `nose` and executing `nose.run()` with the necessary arguments. 
+
+    As mentioned by Ned Batchelder, in the [FAQ](https://coverage.readthedocs.io/en/coverage-4.5.1a/faq.html) of Coverage:
+    > The best way to use nose and coverage.py together is to run nose under coverage.py :
+    >
+    > `coverage run $(which nosetests)`
+    >
+    > You can also use  `nosetests --with-coverage` to use nose’s built-in plugin, but it isn’t recommended.  
+
+    Thus, I chose the command line method over directly running coverage within nose. All the answer tests are listed in a yaml file which is then read by a python script. This script then runs all these tests using the following:
+
+    ```python
+    subprocess.check_output(job, stderr=subprocess.STDOUT, universal_newlines=True, shell=True)
+    ```
+
+
+    Here, `job` is one of the answer test command. For example, 
+    ```python
+    job = ['coverage', 'run', '-a', '$(which nosetests)', '--with-answer-testing', '--nologcapture', '-d', '-v',
+           '--local', '--local-dir=answer-store', '--answer-name=py36_answers_line_plot', 
+           'yt/visualization/tests/test_line_plots.py:test_line_plot']
+    ```
+
+    If any of the answer tests fails, then a report is uploaded to yt's curldrop server. This report is an HTML page with actual, expected and the difference image of the test embedded in it. The URL of this HTML page is published in Travis logs as follows:
+
+    ![](assets/travis-failed-answer-tests.PNG "Url of uploaded HTML page")
+
+    A sample HTML page looks something like this:
+
+    ![](assets/failed-answer-test.PNG "Generated report of failed answer tests")
+
+    Further, if for any of the answer tests, no golden-answer exists then a zip file with the new answers is uploaded to the yt's curldrop server. The URL of the uploaded zip file is posted in Travis logs and the run is failed.
+
+    ![](assets/travis-upload-missing-answer.PNG "Url of new answers is posted in Travis log")
+
+---
+
+### Next Step...
+
+- Remove real data from the answer tests of `visualization` and `volume_rendering` modules and write tests using the above approach
+
+- Reduce the runtime of the tests in [test_profile_plots.py](https://github.com/yt-project/yt/blob/master/yt/visualization/tests/test_profile_plots.py), [test_particle_plot.py](https://github.com/yt-project/yt/blob/master/yt/visualization/tests/test_particle_plot.py) which are one of the most time consuming tests
+
+---
