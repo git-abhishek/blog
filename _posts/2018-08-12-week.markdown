@@ -1,0 +1,205 @@
+---
+layout: post
+title:  "Final Work Summary"
+excerpt: ""  
+categories: "gsoc-blog-final-summary"
+permalink: /:categories
+---
+
+ <style type="text/css">
+.page-header { color: #fff; text-align: center; background-color: #159957; background-image: linear-gradient(120deg, #1a2a6c, #b21f1f, #fdbb2d); }
+  </style>
+
+## 1. Code Coverage  
+
+Using [Codecov](https://codecov.io/gh), [yt's coverage dashboard](https://codecov.io/gh/yt-project/yt) was created. Following PRs led to this development:
+
+:heavy_check_mark: [Codecov Integration](https://github.com/yt-project/yt/pull/1800)
+
+:heavy_check_mark: [Updating config to not fail the pushed patch](https://github.com/yt-project/yt/pull/1805)
+
+:heavy_check_mark: [Removed coverage report from Travis Logs](https://github.com/yt-project/yt/pull/1810)
+
+:heavy_check_mark: [Adding coverage report from AppVeyor](https://github.com/yt-project/yt/pull/1845)
+
+:x: [Fixing AppVeyor python2.7 run of nosetests with coverage](https://github.com/yt-project/yt/pull/1851)
+
+:heavy_check_mark: [Reverting #1845 merge](https://github.com/yt-project/yt/pull/1852)
+
+:heavy_check_mark: [[Experiment] coverage report from Jenkins](https://github.com/yt-project/yt/pull/1910)
+
+
+## 2. Answer Testing Infrastructure 
+
+### `PR#1883` Brief Background
+Currently, all the answer testing is done at Jenkins. Many times Jenkins service is down and takes a few days to check the issue and bring it up. This hampers developers' time as they can not run answer test suite against their changes and thus, a lot of development gets blocked.
+
+With this PR, I plan to reduce the dependency on Jenkins by enabling answer testing on cloud platforms like Travis. These platforms have high service up-time.
+
+Answer testing on Travis is possible if we test using fake datasets instead of real datasets (otherwise huge network I/O). Since many modules (except frontends) of yt can be tested with only fake datasets, this makes it possible to have a subset of answer tests that could be run on cloud services.
+
+Thus, it makes sense to have answer tests running on high availability cloud platforms and reduce total reliance on Jenkins
+
+### `PR#1883` Summary
+Using yt answer testing, an attempt to run answer tests on Travis is being done. Following are the highlights of this PR:
+
+- Division and Running of tests:
+  - Divide the tests into unit tests and answer tests using nose's `@attr("answer_test")` tag
+  - Run tests excluding the tests with the `answer_testing` tag
+
+- Answer Testing
+  - Ability to run all the answer tests on Travis (currently doing it for py27 and py36 version as done by yt's Jenkins) with single `nosestets` command
+  - If no gold answer is present in answer-store, upload new answers to the upload service (yt's curldrop server) and finally fail the tests
+  - If the answer tests fail, generate and upload an HTML page listing all the failed tests with their actual, expected and difference plot (eg for a dummy run [index.html](http://use.yt/upload/560ed34f) got generated).
+  
+### Fix answer test framework (`PR#1905` and `PR#1940`)
+
+#### Problem
+
+Executing answer tests required running `nosetests` command for each answer test. This was due to a required keyword in the command `--answer-name="test dependent golden answer name"` that specifies the golden answer for the test. Using this implementation, a possible solution was to maintain a YAML file that would have the `answer-name` mapping for each answer test. This would add another dependency to maintain an updated YAML file which had to be updated each time a new answer test was written.
+
+#### Fix
+
+In order to run answer test on Travis with just one `nosetests` command, yt's answer testing framework was fixed in `PR#1905` and `PR#1940`. With these changes, the `answer-name` could be set in the test case itself and thus does not require any additional dependency to run answer tests.
+
+The answer test now would work as described below:
+
+
+Assume `test_plot.py` has 4 tests, 2 are answer tests (`answer_test_1`, `answer_test_2`) and 2 unit tests (`unit_test_1`, `unit_test_2`) and directory structure is `yt/plots/tests/test_plot.py`
+```python
+#test_plot.py
+#------------
+...
+
+def test_unit_test_1():
+    pass
+
+def test_unit_test_2():
+    pass
+
+def test_answer_test_1():
+    # answer_name is set to be answer_test_1
+    pass
+
+def test_answer_test_2():
+    # answer_name is set to be answer_test_2
+    pass
+
+...
+
+```
+
+1. `nosetests --with-answer-testing --local --local-dir=answer-store yt/plots/tests/test_plot.py`
+
+    Will run all the 4 tests. For the answer tests to pass, answers should be present at the directory location `answer-store`. This was not possible earlier.
+
+2. `nosetests --with-answer-testing --local --local-dir=answer-store yt/plots/tests/test_plot.py:test_answer_test_1`
+
+    Will execute `test_answer_test_1`. Earlier we had to put one more argument `--answer-name=answer_test_1`.
+
+3. `nosetests --with-answer-testing --local --local-dir=answer-store --answer-store yt/plots/tests/test_plot.py:test_answer_test_1`
+
+    Will store golden answers of `test_answer_test_1`. Earlier we had to put one more argument `--answer-name=answer_test_1`.
+    
+    If `--answer-name new_name_answer_test_1` is also added in the above statement, then the name of the golden answer from the command line is given precedence over the `answer_name` provided in the test case code. Due to this precedence, the current Jenkins answer testing would not break and thus is compatible with the new changes.
+
+4. `nosetests --with-answer-testing --local --local-dir=answer-store --answer-store yt/plots/tests/test_plot.py`
+
+    This will generate and store all the answers in  **one** answer-store file. Hence, we have to execute the above statement individually for each answer test. **Do not generate answers in batch mode.**
+    
+ **Note:**
+ - For generating golden answers we execute `nosetests ... --answer-store  ...` command once per test case. Otherwise, for all the tests only one single golden answer file will be generated. As a result, if a new test case is added, then the earlier golden answer would have to be updated and thus each time the other golden answer would get updated. Hence, the recommended way to generate a golden answer is to execute one `nosetests` command per test. **Do not generate answers in batch mode.**
+ 
+ - Arguments of `nosetests` passed in command line get precedence over the values set from code. That is, if an answer test case has `answer_name = name_1` and if the `nosetests` command for this test is `nosetests ... --answer-store --answer-name name_2 ... tests/test_plot.py:test_simple_plot` then the golden answer created will have `name_2` as the answer name in answer store. In this case, if now the test is executed by removing `answer-store` and keeping `--answer-name name_2` from the above command, the test would still pass. Thus, here `--answer-name` would have to be provided each time since the golden answer was generated by specifying answer-name that was different from the `answer_name` set in the test case.  
+
+
+
+:heavy_check_mark: `PR#1883`: [Answer tests on Travis](https://github.com/yt-project/yt/pull/1883)
+
+:heavy_check_mark: `PR#1905`: [Fix implementation of AnswerTestingTest.prefix](https://github.com/yt-project/yt/pull/1905)
+
+:heavy_check_mark: [Fix test fixture](https://github.com/yt-project/yt/pull/1928)
+
+:x: [Revert "Fix implementation of AnswerTestingTest.prefix"](https://github.com/yt-project/yt/pull/1939)
+
+:heavy_check_mark: `PR#1940`: [Fix answer testing plugin](https://github.com/yt-project/yt/pull/1940)
+
+:heavy_check_mark: [Use set() instead of list, since same ans test could have iterations](https://github.com/yt-project/yt/pull/1957)
+
+### 2.1 Answer Tests
+
+After fixing the answer test infrastructure, following PRs were issued that adds answer test cases which could be run on Travis:
+
+   - :construction:: More tests with answer testing, open PR
+
+   - :heavy_check_mark:: Answer test cases that got merged
+
+
+:construction: [Update `test_orientation` as Answer Test on Travis](https://github.com/yt-project/yt/pull/1952)
+
+:construction: [Add answer test (in test_mesh_render.py) with fake_ds to be run on Travis](https://github.com/yt-project/yt/pull/1953)
+
+:construction: [Update test cases in visualization.test_particle_plot.py](https://github.com/yt-project/yt/pull/1954)
+
+:construction: [Update test cases of visualization/tests/test_profile_plots.py](https://github.com/yt-project/yt/pull/1955)
+
+:construction: [Plot window answer tests visualization.test_plotwindow.py](https://github.com/yt-project/yt/pull/1956)
+
+:heavy_check_mark: [Update visualization mesh slices answer tests](https://github.com/yt-project/yt/pull/1941)
+
+
+## 3. Download and Cache small test dataset on Travis
+
+This feature helps in testing with a real dataset, if the dataset is not present in the environment of execution. The aim is to download test datasets that are small in size thus, enabling them with the existing `@require_ds()` decorator to be run on Travis. The `PR#1967` makes these changes and this feature idea came up in `PR#1942`.
+
+:construction: `PR#1967`: [Download test data on Travis for testing](https://github.com/yt-project/yt/pull/1967)
+
+:interrobang: `PR#1942`: [Remove the test of making slices through raw fields](https://github.com/yt-project/yt/pull/1942)
+
+
+## 4. Miscellaneous
+
+As part of increasing code coverage and writing more test cases, code cleanup and refactoring; I requested the following PRs:
+
+:heavy_check_mark: [Updated PartilcePlot axis configuration (fix for Issue #1680)](https://github.com/yt-project/yt/pull/1697) (Pre GSoC PR)
+
+:heavy_check_mark: [Profile plot annotate title and text. Addresses Issue #1599](https://github.com/yt-project/yt/pull/1705)
+
+:heavy_check_mark: [Enhanced test cases for image_array.py in data_objects](https://github.com/yt-project/yt/pull/1798)
+
+:heavy_check_mark: [Removing the dependency from real datasets](https://github.com/yt-project/yt/pull/1801)
+
+:heavy_check_mark: [Updating tests to use fake dataset instead of real data](https://github.com/yt-project/yt/pull/1809)
+
+:heavy_check_mark: [Added more tests for particle filter](https://github.com/yt-project/yt/pull/1816)
+
+:heavy_check_mark: [Removing particle_io (deprecated, undocumented) from everywhere](https://github.com/yt-project/yt/pull/1819)
+
+:heavy_check_mark: [Adding test cases for RegionExpression](https://github.com/yt-project/yt/pull/1820)
+
+:heavy_check_mark: [Cleanup and added test cases for `data_objects.data_containers`](https://github.com/yt-project/yt/pull/1831)
+
+:x: [Input validation for disk object fixes #1768](https://github.com/yt-project/yt/pull/1832)
+
+:heavy_check_mark: [Input validation for disk](https://github.com/yt-project/yt/pull/1833)
+
+:heavy_check_mark: [Added test cases for visualization.color_maps](https://github.com/yt-project/yt/pull/1841)
+
+:heavy_check_mark: [Adding test cases for visualization.image_writer](https://github.com/yt-project/yt/pull/1842) 
+
+:heavy_check_mark: [Remove LinearLocator, LogLocator from Visualization](https://github.com/yt-project/yt/pull/1861)
+
+:heavy_check_mark: [Input validation for selection data containers](https://github.com/yt-project/yt/pull/1870)
+
+:heavy_check_mark: [Cleanup generated files after the tests](https://github.com/yt-project/yt/pull/1871)
+
+:heavy_check_mark: [Keep only png format while doing plot.save() in visualization module](https://github.com/yt-project/yt/pull/1885)
+
+:heavy_check_mark: [Refactor, save png to a temporary directory, clean-up temp dir after tests](https://github.com/yt-project/yt/pull/1886)
+ 
+:heavy_check_mark: [In boxlib/data_structures split using os.sep](https://github.com/yt-project/yt/pull/1926) 
+
+:x: [removed real dataset from the tests](https://github.com/yt-project/yt/pull/1835)
+
+
+#### My [GSoC Blog](https://git-abhishek.github.io/blog/) also discusses these changes in more detail.
