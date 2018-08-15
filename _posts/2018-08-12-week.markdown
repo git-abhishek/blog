@@ -210,6 +210,8 @@ As part of increasing code coverage and writing more test cases, code cleanup an
 
   ![](assets/contribution-graph.PNG "Contributions to yt master")
 
+  :trident: 40+ PR submitted during GSoC period ([source](https://github.com/yt-project/yt/pulls/git-abhishek))
+
 
 
 ---
