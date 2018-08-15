@@ -7,7 +7,7 @@ permalink: /:categories
 ---
 
  <style type="text/css">
-.page-header { color: #fff; text-align: center; background-color: #159957; background-image: linear-gradient(120deg, #fc00ff, #00dbde); }
+.page-header { color: #fff; text-align: center; background-color: #159957; background-image: linear-gradient(120deg, #c33764, #1d2671); } 
   </style>
 
 During the past few weeks, I worked on `visualization` module. Following is a brief description of the work:
