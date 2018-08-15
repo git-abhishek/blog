@@ -7,7 +7,8 @@ permalink: /:categories
 ---
 
  <style type="text/css">
-.page-header { color: #fff; text-align: center; background-color: #159957; background-image: linear-gradient(120deg, #1a2a6c, #b21f1f, #fdbb2d); }
+.page-header { color: #fff; text-align: center; background-color: #159957; background-image: linear-gradient(120deg,  
+  #360033,#0b8793 ); }
   </style>
 
 ## 1. Code Coverage  
@@ -201,5 +202,16 @@ As part of increasing code coverage and writing more test cases, code cleanup an
 
 :x: [removed real dataset from the tests](https://github.com/yt-project/yt/pull/1835)
 
+## 5. Accomplishments
+  
+  :star: Officially became a member of yt ([yt project members](http://yt-project.org/members.html))
 
-#### My [GSoC Blog](https://git-abhishek.github.io/blog/) also discusses these changes in more detail.
+  :rocket: Number 15th in Contributions to yt master Feb 4, 2007 – Aug 15, 2018 ([source](https://github.com/yt-project/yt/graphs/contributors))
+
+  ![](assets/contribution-graph.PNG "Contributions to yt master")
+
+
+
+---
+### My [GSoC Blog](https://git-abhishek.github.io/blog/) also discusses these changes in more detail.
+---
